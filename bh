@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 28 12:36:14 2021
+
+@author: bhargavithakur
+"""
+
+
+#importing pandas and data file from American Community Survey
+
+
+
+import pandas
+import pandas as pd 
+import os
+base_path = r'/Users/bhargavithakur/Downloads'
+path = os.path.join(base_path, 'dataprog1.csv')
+
+
+df_dataprog = pd.read_csv(path)
+df_dataprog
+
+#creating dummies for each of the hispanic status of individuals 
+
+df_dataprog = pd.get_dummies(df_dataprog, columns=['hispan'])
+
+list(df_dataprog.columns)
+df_dataprog.head()
+
+
+#subsetting only white populations
+
+
+df_dataprog = df_dataprog[df_dataprog['race'] == 'White']
+
+
+#subsetting populations of age between 25 to 59 years
+
+
+df_dataprog = df_dataprog[(df_dataprog['age'] >= 25) | (df_dataprog['age'] <= 59)]
+
+
+#creating dummies for sex of the individual
+
+df_dataprog = pd.get_dummies(df_dataprog, columns=['sex'])
+
+#creating dummies for employment satus of the individual
+
+df_dataprog = pd.get_dummies(df_dataprog, columns=['empstat'])
+
+
+
+#comparing mean employmen numbers by sex and hispanic status 
+
+means = df_dataprog.groupby(['sex_Female', 'hispan_Not Hispanic'])['empstat_Employed'].mean()
+means
+
+
+#comparing total incomes (mean, standard deviation) conditional on sex and hispanic status 
+
+df_dataprog1 = df_dataprog[df_dataprog['empstat_Employed']  == 1]
+mean_incomes = df_dataprog1.groupby(['sex_Female', 'hispan_Not Hispanic'])['incwage'].mean()
+sd_incomes = df_dataprog1.groupby(['sex_Female', 'hispan_Not Hispanic'])['incwage'].sem()
+sd_incomes
+mean_incomes
+describe_incomes = df_dataprog1.groupby(['sex_Female', 'hispan_Not Hispanic'])['incwage'].describe()
